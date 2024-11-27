@@ -1,17 +1,19 @@
 use std::cell::RefCell;
-thread_local!{
-    static MSG: RefCell<String>=RefCell::new(String::new());
+
+thread_local! {
+    static CHAT: RefCell<Vec<String>> = RefCell::new(Vec::new());
 }
+
 #[ic_cdk::update]
-fn save_msg(msg: String){
-    MSG.with(|static_msg| *static_msg.borrow_mut()=msg);
-
+fn save_msg(msg: String) {
+    CHAT.with(|static_msg| static_msg.borrow_mut().push(msg));
 }
+
 #[ic_cdk::query]
-fn get_msg()->String{
-    MSG.with(|static_msg| static_msg.borrow().clone())
-
+fn get_chat() -> Vec<String> {
+    CHAT.with(|static_msg| static_msg.borrow().clone())
 }
+
 #[ic_cdk::query]
 fn greet(name: String) -> String {
     format!("Hello, {}!", name)
